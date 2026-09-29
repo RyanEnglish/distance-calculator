@@ -3,6 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#E9EDEF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F161B" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='2' width='22' height='28' rx='4' fill='%230E6B57'/%3E%3Cg fill='%23fff'%3E%3Crect x='9' y='6' width='14' height='6' rx='1.5'/%3E%3Crect x='9' y='15' width='4' height='3' rx='1'/%3E%3Crect x='14' y='15' width='4' height='3' rx='1'/%3E%3Crect x='19' y='15' width='4' height='3' rx='1'/%3E%3Crect x='9' y='20' width='4' height='3' rx='1'/%3E%3Crect x='14' y='20' width='4' height='3' rx='1'/%3E%3Crect x='19' y='20' width='4' height='3' rx='1'/%3E%3Crect x='9' y='25' width='4' height='3' rx='1'/%3E%3Crect x='14' y='25' width='4' height='3' rx='1'/%3E%3Crect x='19' y='25' width='4' height='3' rx='1'/%3E%3C/g%3E%3C/svg%3E">
 <title>Shift distance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,6 +20,7 @@
     --accent: #0E6B57;
     --accent-ink: #FFFFFF;
     --active: #DCEFE8;
+    --tools: #D8E0E5;
     --bar: #16202A;
     --bar-ink: #F3F6F7;
     --bar-muted: #A9B5BE;
@@ -30,13 +34,13 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0F161B; --surface: #172128; --ink: #E6ECEF; --muted: #95A2AC; --line: #26333C;
-      --accent: #3FB594; --accent-ink: #07130F; --active: #173A31;
+      --accent: #3FB594; --accent-ink: #07130F; --active: #173A31; --tools: #1F2D36;
       --bar: #25333D; --bar-ink: #F3F6F7; --bar-muted: #A9B5BE; --focus: #6AB0FF;
     }
   }
   :root[data-theme="dark"] {
     --bg: #0F161B; --surface: #172128; --ink: #E6ECEF; --muted: #95A2AC; --line: #26333C;
-    --accent: #3FB594; --accent-ink: #07130F; --active: #173A31;
+    --accent: #3FB594; --accent-ink: #07130F; --active: #173A31; --tools: #1F2D36;
     --bar: #25333D; --bar-ink: #F3F6F7; --bar-muted: #A9B5BE; --focus: #6AB0FF;
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
@@ -52,7 +56,10 @@
   }
   .wrap { max-width: 36rem; margin: 0 auto; padding: 0 1rem; }
 
-  header { padding: 1.5rem 0 0.75rem; }
+  header { padding: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.875rem; }
+  .brand { flex: none; display: block; border-radius: 50%; }
+  .brand img { display: block; width: 3.5rem; height: 3.5rem; }
+  a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   h1 { font-size: 1.5rem; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
   header p { margin: 0; color: var(--muted); }
 
@@ -60,7 +67,9 @@
     position: sticky;
     top: env(safe-area-inset-top, 0px);
     z-index: 2;
-    background: var(--bg);
+    background: var(--tools);
+    box-shadow: 0 0 0 100vmax var(--tools);
+    clip-path: inset(0 -100vmax);
     padding: 0.75rem 0;
     display: grid;
     gap: 0.625rem;
@@ -75,8 +84,6 @@
     color: var(--ink);
   }
   input[type="search"]::placeholder { color: var(--muted); }
-  .toggle { display: inline-flex; align-items: center; gap: 0.5rem; color: var(--muted); cursor: pointer; width: fit-content; }
-  .toggle input { width: 1.25rem; height: 1.25rem; accent-color: var(--accent); margin: 0; }
 
   ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .row {
@@ -88,7 +95,8 @@
     border-bottom: 1px solid var(--line);
     background: var(--surface);
   }
-  .row.is-active { background: var(--active); }
+  .row[hidden] { display: none; }
+  .row.is-active { background: var(--active); box-shadow: inset 4px 0 0 var(--accent); }
   .name { display: block; font-weight: 600; }
   .km { display: block; font-family: var(--mono); font-size: 0.875rem; color: var(--muted); }
   .row.is-active .km { color: var(--ink); }
@@ -100,12 +108,17 @@
     border: 1.5px solid var(--line);
     background: var(--surface);
     color: var(--ink);
-    font: 600 1.5rem/1 var(--sans);
+    padding: 0;
+    display: grid;
+    place-items: center;
     cursor: pointer;
     touch-action: manipulation;
   }
-  .stepper button.plus { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
-  .stepper button:disabled { opacity: 0.35; cursor: default; }
+  .stepper svg { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
+  .stepper button.plus { border-color: var(--accent); color: var(--accent); }
+  .row.is-active .stepper button.plus { background: var(--accent); color: var(--accent-ink); }
+  .row:not(.is-active) .minus,
+  .row:not(.is-active) .count { visibility: hidden; }
   .count {
     min-width: 2ch;
     text-align: center;
@@ -153,15 +166,18 @@
 <body>
   <div class="wrap">
     <header>
-      <h1>Shift distance</h1>
-      <p>Tap + once for each time a destination appears on your slip.</p>
+      <a class="brand" href="https://transportunion.com.au/" target="_blank" rel="noopener">
+        <img src="logo.png" alt="Independent Transport Union" width="56" height="56">
+      </a>
+      <div>
+        <h1>Shift distance</h1>
+        <p>Tap + once for each time a destination appears on your slip.</p>
+      </div>
     </header>
 
     <div class="tools">
       <label class="sr-only" for="search">Search destinations</label>
-      <input id="search" type="search" placeholder="Search 55 destinations" autocomplete="off">
-      <label class="toggle"><input id="onlyAdded" type="checkbox"> Show only added</label>
-    </div>
+      <input id="search" type="search" placeholder="Search 55 destinations" autocomplete="off">    </div>
 
     <ul id="list"></ul>
     <div id="empty" class="empty" hidden></div>
@@ -183,61 +199,60 @@
 // km can have up to 3 decimal places.
 // ---------------------------------------------------------------
 const DESTINATIONS = [
-  { name: "Airport Freight Terminal",   km: 38.412 },
-  { name: "Ashgrove Clinic",            km: 7.905 },
-  { name: "Bayview Warehouse",          km: 14.260 },
-  { name: "Beacon Hill Depot",          km: 22.118 },
-  { name: "Birchwood Mall",             km: 9.734 },
-  { name: "Bridgeport Yard",            km: 31.057 },
-  { name: "Brookside School",           km: 5.482 },
-  { name: "Calder Park Store",          km: 27.690 },
-  { name: "Cannery Row Offices",        km: 12.341 },
-  { name: "Cedar Flats",                km: 18.876 },
-  { name: "Central Library",            km: 3.215 },
-  { name: "Clifton Station",            km: 11.009 },
-  { name: "Coastal Distribution",       km: 44.530 },
-  { name: "Coral Street Pharmacy",      km: 6.127 },
-  { name: "Crestwood Hospital",         km: 16.748 },
-  { name: "Dockside Cold Store",        km: 13.902 },
-  { name: "Eastgate Plaza",             km: 8.664 },
-  { name: "Elm Court Aged Care",        km: 10.385 },
-  { name: "Fairfield Markets",          km: 4.971 },
-  { name: "Fernhill Primary",           km: 19.253 },
-  { name: "Foundry Lane",               km: 7.118 },
-  { name: "Garden Point Kiosk",         km: 25.407 },
-  { name: "Glenview Medical",           km: 15.836 },
-  { name: "Granite Quarry Office",      km: 52.214 },
-  { name: "Harbour Master",             km: 12.990 },
-  { name: "Hawthorn Ridge",             km: 21.573 },
-  { name: "Highfield Estate",           km: 17.302 },
-  { name: "Hilltop Reservoir",          km: 33.845 },
-  { name: "Ironbark Industrial",        km: 28.061 },
-  { name: "Juniper Close",              km: 6.790 },
-  { name: "Kingsway Retail Park",       km: 11.456 },
-  { name: "Lakeside Pavilion",          km: 20.128 },
-  { name: "Laurel Bank Depot",          km: 24.667 },
-  { name: "Lighthouse Point",           km: 41.093 },
-  { name: "Maple Grove Centre",         km: 9.211 },
-  { name: "Marina North",               km: 14.874 },
-  { name: "Meadowbank Farm Gate",       km: 47.326 },
-  { name: "Mill Road Workshop",         km: 8.049 },
-  { name: "Northern Substation",        km: 35.518 },
-  { name: "Oakleigh Terrace",           km: 10.902 },
-  { name: "Orchard Hill",               km: 26.385 },
-  { name: "Park Lane Hotel",            km: 4.307 },
-  { name: "Pinecrest Laboratory",       km: 18.140 },
-  { name: "Quarry Bend",                km: 49.772 },
-  { name: "Queens Wharf",               km: 13.268 },
-  { name: "Railway Goods Shed",         km: 15.093 },
-  { name: "Redgum Community Hall",      km: 23.451 },
-  { name: "Riverbend Council Office",   km: 12.006 },
-  { name: "Rosewood Clinic",            km: 9.587 },
-  { name: "Saltmarsh Treatment Plant",  km: 37.660 },
-  { name: "Southern Hub",               km: 29.914 },
-  { name: "Stonebridge Garage",         km: 16.235 },
-  { name: "Sunnyside Kindergarten",     km: 5.839 },
-  { name: "Tallow Creek Pump Station",  km: 43.127 },
-  { name: "Westfield Business Park",    km: 19.480 },
+  { name: "Alamein", km: 29.778},
+  { name: "Bayswater", km: 59.056},
+  { name: "Belgrave", km: 82.602},
+  { name: "Blackburn", km: 34.884},
+  { name: "Brighton Beach", km: 29.474},
+  { name: "Broadmeadows", km: 36.160},
+  { name: "Burnley Loop", km: 6.534},
+  { name: "Camberwell", km: 17.946},
+  { name: "Camberwell-Alamein", km: 11.832},
+  { name: "Carrum", km: 69.728},
+  { name: "Caulfield Loop", km: 6.534},
+  { name: "Cheltenham", km: 42.168},
+  { name: "City Circle", km: 5.588},
+  { name: "Clifton Hill Loop", km: 4.314},
+  { name: "Craigieburn", km: 54.660},
+  { name: "Cranbourne", km: 86.922},
+  { name: "Dandenong", km: 59.066},
+  { name: "Dandenong-Cranbourne", km: 27.856},
+  { name: "Dandenong-East Pakenham", km: 57.666},
+  { name: "East Pakenham", km: 116.732},
+  { name: "Eltham", km: 52.314},
+  { name: "Flemington", km: 17.405},
+  { name: "Frankston", km: 85.382},
+  { name: "Frankston-Stony Point", km: 61.330},
+  { name: "Glen Waverley", km: 41.986},
+  { name: "Hurstbridge", km: 73.574},
+  { name: "Laverton via", km: 44.474},
+  { name: "Laverton via", km: 46.804},
+  { name: "Lilydale", km: 75.256},
+  { name: "Macaulay", km: 7.240},
+  { name: "Macleod", km: 32.956},
+  { name: "Melbourne Yard", km: 5.824},
+  { name: "Mernda", km: 63.670},
+  { name: "Moorabbin", km: 34.428},
+  { name: "Mooroolbark", km: 66.496},
+  { name: "Mordialloc", km: 52.922},
+  { name: "Newport", km: 23.574},
+  { name: "Newport-Laverton", km: 23.230},
+  { name: "Newport-Williamstown", km: 7.298},
+  { name: "North Melbourne", km: 6.624},
+  { name: "Northern Loop", km: 4.712},
+  { name: "Ringwood", km: 49.048},
+  { name: "Riversdale", km: 21.002},
+  { name: "Sandringham", km: 35.862},
+  { name: "Showgrounds", km: 15.695},
+  { name: "Sunbury", km: 80.160},
+  { name: "Upfield", km: 40.176},
+  { name: "Upper Ferntree", km: 72.862},
+  { name: "Watergardens", km: 50.160},
+  { name: "Werribee via", km: 65.944},
+  { name: "Werribee via", km: 68.274},
+  { name: "West Footscray", km: 18.252},
+  { name: "Westall", km: 41.954},
+  { name: "Williamstown", km: 30.872},
 ];
 
 // Work in whole metres so 3-decimal km values add up exactly
@@ -249,7 +264,6 @@ const formatKm = m => (m / 1000).toFixed(3);
 
 const list = document.getElementById("list");
 const search = document.getElementById("search");
-const onlyAdded = document.getElementById("onlyAdded");
 const empty = document.getElementById("empty");
 const totalEl = document.getElementById("total");
 const stopsEl = document.getElementById("stops");
@@ -275,18 +289,18 @@ for (const it of items) {
   stepper.className = "stepper";
   const minus = document.createElement("button");
   minus.type = "button"; minus.className = "minus"; minus.dataset.step = "-1";
-  minus.textContent = "−";
+  minus.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/></svg>';
   const count = document.createElement("span");
   count.className = "count";
   const plus = document.createElement("button");
   plus.type = "button"; plus.className = "plus"; plus.dataset.step = "1";
-  plus.textContent = "+";
+  plus.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
   plus.setAttribute("aria-label", `Add a visit to ${it.name}`);
   stepper.append(minus, count, plus);
 
   li.append(info, stepper);
   list.append(li);
-  it.el = { li, km, minus, count };
+  it.el = { li, km, minus, count, plus };
   renderRow(it);
 }
 
@@ -313,23 +327,18 @@ function applyFilter() {
   const q = search.value.trim().toLowerCase();
   let shown = 0;
   for (const it of items) {
-    const match = it.name.toLowerCase().includes(q) && (!onlyAdded.checked || it.count > 0);
+    const match = it.name.toLowerCase().includes(q);
     it.el.li.hidden = !match;
     if (match) shown++;
   }
   empty.hidden = shown > 0;
   if (shown === 0) {
-    empty.textContent = "";
-    if (onlyAdded.checked && !q) {
-      empty.textContent = "Nothing added yet. Untick “Show only added” to see every destination.";
-    } else {
-      empty.append(`No destinations match “${search.value.trim()}”. `);
-      const b = document.createElement("button");
-      b.type = "button";
-      b.textContent = "Clear search";
-      b.addEventListener("click", () => { search.value = ""; applyFilter(); search.focus(); });
-      empty.append(b);
-    }
+    empty.textContent = `No destinations match “${search.value.trim()}”. `;
+    const b = document.createElement("button");
+    b.type = "button";
+    b.textContent = "Clear search";
+    b.addEventListener("click", () => { search.value = ""; applyFilter(); search.focus(); });
+    empty.append(b);
   }
 }
 
@@ -340,17 +349,16 @@ list.addEventListener("click", e => {
   it.count = Math.max(0, it.count + Number(btn.dataset.step));
   renderRow(it);
   renderTotal();
+  if (it.count === 0 && btn === it.el.minus) it.el.plus.focus();
   const c = it.el.count;
   c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump");
 });
 
 search.addEventListener("input", applyFilter);
-onlyAdded.addEventListener("change", applyFilter);
 
 clearBtn.addEventListener("click", () => {
   for (const it of items) { it.count = 0; renderRow(it); }
   renderTotal();
-  applyFilter();
 });
 
 renderTotal();

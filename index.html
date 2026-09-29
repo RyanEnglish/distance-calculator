@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#E9EDEF" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F161B" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='2' width='22' height='28' rx='4' fill='%230E6B57'/%3E%3Cg fill='%23fff'%3E%3Crect x='9' y='6' width='14' height='6' rx='1.5'/%3E%3Crect x='9' y='15' width='4' height='3' rx='1'/%3E%3Crect x='14' y='15' width='4' height='3' rx='1'/%3E%3Crect x='19' y='15' width='4' height='3' rx='1'/%3E%3Crect x='9' y='20' width='4' height='3' rx='1'/%3E%3Crect x='14' y='20' width='4' height='3' rx='1'/%3E%3Crect x='19' y='20' width='4' height='3' rx='1'/%3E%3Crect x='9' y='25' width='4' height='3' rx='1'/%3E%3Crect x='14' y='25' width='4' height='3' rx='1'/%3E%3Crect x='19' y='25' width='4' height='3' rx='1'/%3E%3C/g%3E%3C/svg%3E">
+<meta name="theme-color" content="#D8E0E5" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1F2D36" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='5' y='2' width='22' height='28' rx='4' fill='%23173BCC'/%3E%3Cg fill='%23fff'%3E%3Crect x='9' y='6' width='14' height='6' rx='1.5'/%3E%3Crect x='9' y='15' width='4' height='3' rx='1'/%3E%3Crect x='14' y='15' width='4' height='3' rx='1'/%3E%3Crect x='19' y='15' width='4' height='3' rx='1'/%3E%3Crect x='9' y='20' width='4' height='3' rx='1'/%3E%3Crect x='14' y='20' width='4' height='3' rx='1'/%3E%3Crect x='19' y='20' width='4' height='3' rx='1'/%3E%3Crect x='9' y='25' width='4' height='3' rx='1'/%3E%3Crect x='14' y='25' width='4' height='3' rx='1'/%3E%3Crect x='19' y='25' width='4' height='3' rx='1'/%3E%3C/g%3E%3C/svg%3E">
 <title>Shift distance</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible+Mono:wght@400;600&family=Atkinson+Hyperlegible+Next:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
     --bg: #E9EDEF;
@@ -17,16 +17,15 @@
     --ink: #16202A;
     --muted: #56626D;
     --line: #D3D9DE;
-    --accent: #0E6B57;
-    --accent-ink: #FFFFFF;
-    --active: #DCEFE8;
+    --active: #E1E8FB;
     --tools: #D8E0E5;
+    --brand: #173BCC;
+    --brand-ink: #FFFFFF;
     --bar: #16202A;
     --bar-ink: #F3F6F7;
     --bar-muted: #A9B5BE;
     --focus: #1F7AE0;
-    --sans: "Atkinson Hyperlegible Next", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-    --mono: "Atkinson Hyperlegible Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     box-sizing: border-box;
     padding-top: env(safe-area-inset-top, 0px);
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -34,14 +33,14 @@
   @media (prefers-color-scheme: dark) {
     :root:not([data-theme="light"]) {
       --bg: #0F161B; --surface: #172128; --ink: #E6ECEF; --muted: #95A2AC; --line: #26333C;
-      --accent: #3FB594; --accent-ink: #07130F; --active: #173A31; --tools: #1F2D36;
-      --bar: #25333D; --bar-ink: #F3F6F7; --bar-muted: #A9B5BE; --focus: #6AB0FF;
+      --active: #1A2650; --tools: #1F2D36; --brand: #5A7CF0; --brand-ink: #0B1330;
+      --bar: #25333D; --focus: #6AB0FF;
     }
   }
   :root[data-theme="dark"] {
     --bg: #0F161B; --surface: #172128; --ink: #E6ECEF; --muted: #95A2AC; --line: #26333C;
-    --accent: #3FB594; --accent-ink: #07130F; --active: #173A31; --tools: #1F2D36;
-    --bar: #25333D; --bar-ink: #F3F6F7; --bar-muted: #A9B5BE; --focus: #6AB0FF;
+    --active: #1A2650; --tools: #1F2D36; --brand: #5A7CF0; --brand-ink: #0B1330;
+    --bar: #25333D; --focus: #6AB0FF;
   }
   html { scroll-padding-top: env(safe-area-inset-top, 0px); }
   *, *::before, *::after { box-sizing: inherit; }
@@ -56,7 +55,13 @@
   }
   .wrap { max-width: 36rem; margin: 0 auto; padding: 0 1rem; }
 
-  header { padding: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.875rem; }
+  header {
+    padding: 1.5rem 0 0.75rem;
+    display: flex; align-items: center; gap: 0.875rem;
+    background: var(--tools);
+    box-shadow: 0 0 0 100vmax var(--tools);
+    clip-path: inset(-100vmax -100vmax 0);
+  }
   .brand { flex: none; display: block; border-radius: 50%; }
   .brand img { display: block; width: 3.5rem; height: 3.5rem; }
   a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
@@ -96,9 +101,9 @@
     background: var(--surface);
   }
   .row[hidden] { display: none; }
-  .row.is-active { background: var(--active); box-shadow: inset 4px 0 0 var(--accent); }
+  .row.is-active { background: var(--active); box-shadow: inset 4px 0 0 var(--brand); }
   .name { display: block; font-weight: 600; }
-  .km { display: block; font-family: var(--mono); font-size: 0.875rem; color: var(--muted); }
+  .km { display: block; font-size: 0.875rem; font-variant-numeric: tabular-nums; color: var(--muted); }
   .row.is-active .km { color: var(--ink); }
 
   .stepper { display: flex; align-items: center; gap: 0.25rem; }
@@ -115,14 +120,15 @@
     touch-action: manipulation;
   }
   .stepper svg { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
-  .stepper button.plus { border-color: var(--accent); color: var(--accent); }
-  .row.is-active .stepper button.plus { background: var(--accent); color: var(--accent-ink); }
+  .stepper button.plus { border-color: var(--brand); color: var(--brand); }
+  .row.is-active .stepper button.plus { background: var(--brand); color: var(--brand-ink); }
   .row:not(.is-active) .minus,
   .row:not(.is-active) .count { visibility: hidden; }
   .count {
     min-width: 2ch;
     text-align: center;
-    font: 600 1.25rem var(--mono);
+    font: 600 1.25rem var(--sans);
+    font-variant-numeric: tabular-nums;
   }
   .count.bump { animation: bump 160ms ease-out; }
   @keyframes bump { 50% { transform: scale(1.3); } }
@@ -130,7 +136,7 @@
   button:focus-visible, input:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
 
   .empty { padding: 2rem 0.75rem; color: var(--muted); text-align: center; }
-  .empty button { font: inherit; color: var(--accent); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0.25rem; }
+  .empty button { font: inherit; color: var(--brand); background: none; border: 0; text-decoration: underline; cursor: pointer; padding: 0.25rem; }
 
   .bar {
     position: fixed;
@@ -144,7 +150,7 @@
     display: flex; align-items: center; justify-content: space-between; gap: 1rem;
     padding-top: 0.875rem; padding-bottom: 0.875rem;
   }
-  .total { font: 600 2.25rem/1.1 var(--mono); letter-spacing: -0.02em; }
+  .total { font: 600 2.25rem/1.1 var(--sans); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
   .total small { font-size: 1rem; font-weight: 400; margin-left: 0.25rem; }
   .stops { color: var(--bar-muted); font-size: 0.9375rem; }
   .clear {

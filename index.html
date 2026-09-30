@@ -63,7 +63,7 @@
     clip-path: inset(-100vmax -100vmax 0);
   }
   .brand { flex: none; display: block; border-radius: 50%; }
-  .brand img { display: block; width: 3.5rem; height: 3.5rem; }
+  .brand img { display: block; width: 7rem; height: 7rem; }
   a:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
   h1 { font-size: 1.5rem; margin: 0 0 0.25rem; letter-spacing: -0.01em; }
   header p { margin: 0; color: var(--muted); }
@@ -89,6 +89,25 @@
     color: var(--ink);
   }
   input[type="search"]::placeholder { color: var(--muted); }
+
+  .mode {
+    margin: 0; padding: 0.25rem; border: 0;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem;
+    background: var(--surface);
+    border-radius: 0.75rem;
+  }
+  .mode input { position: absolute; opacity: 0; pointer-events: none; }
+  .mode span {
+    display: block;
+    padding: 0.625rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .mode input:checked + span { background: var(--brand); color: var(--brand-ink); }
+  .mode input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
 
   ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
   .row {
@@ -122,8 +141,6 @@
   .stepper svg { width: 1.375rem; height: 1.375rem; fill: none; stroke: currentColor; stroke-width: 2.5; stroke-linecap: round; }
   .stepper button.plus { border-color: var(--brand); color: var(--brand); }
   .row.is-active .stepper button.plus { background: var(--brand); color: var(--brand-ink); }
-  .row:not(.is-active) .minus,
-  .row:not(.is-active) .count { visibility: hidden; }
   .count {
     min-width: 2ch;
     text-align: center;
@@ -173,7 +190,7 @@
   <div class="wrap">
     <header>
       <a class="brand" href="https://transportunion.com.au/" target="_blank" rel="noopener">
-        <img src="logo.png" alt="Independent Transport Union" width="56" height="56">
+        <img src="logo.png" alt="Independent Transport Union" width="112" height="112">
       </a>
       <div>
         <h1>Shift distance</h1>
@@ -182,6 +199,11 @@
     </header>
 
     <div class="tools">
+      <fieldset class="mode">
+        <legend class="sr-only">Each + adds a</legend>
+        <label><input type="radio" name="mode" value="ret" checked><span>Return</span></label>
+        <label><input type="radio" name="mode" value="one"><span>One way</span></label>
+      </fieldset>
       <label class="sr-only" for="search">Search destinations</label>
       <input id="search" type="search" placeholder="Search 55 destinations" autocomplete="off">    </div>
 
@@ -263,10 +285,16 @@ const DESTINATIONS = [
 
 // Work in whole metres so 3-decimal km values add up exactly
 // (floating point would otherwise drift, e.g. 0.1 + 0.2).
+// Distances are return trips; a one-way trip counts as half.
 const items = DESTINATIONS.map((d, i) => ({
-  i, name: d.name, m: Math.round(d.km * 1000), count: 0, el: {}
+  i, name: d.name, m: Math.round(d.km * 1000), ret: 0, one: 0, el: {}
 }));
 const formatKm = m => (m / 1000).toFixed(3);
+// Sum in half-metres so odd one-way halves stay exact; round only for display.
+const halves = it => it.ret * it.m * 2 + it.one * it.m;
+const halvesToKm = h => formatKm(Math.round(h / 2));
+
+let mode = "ret"; // which count + and − change: "ret" or "one"
 
 const list = document.getElementById("list");
 const search = document.getElementById("search");
@@ -301,7 +329,6 @@ for (const it of items) {
   const plus = document.createElement("button");
   plus.type = "button"; plus.className = "plus"; plus.dataset.step = "1";
   plus.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
-  plus.setAttribute("aria-label", `Add a visit to ${it.name}`);
   stepper.append(minus, count, plus);
 
   li.append(info, stepper);
@@ -311,22 +338,46 @@ for (const it of items) {
 }
 
 function renderRow(it) {
-  const { li, km, minus, count } = it.el;
-  count.textContent = it.count;
-  minus.disabled = it.count === 0;
-  minus.setAttribute("aria-label", `Remove a visit to ${it.name}`);
-  li.classList.toggle("is-active", it.count > 0);
-  km.textContent = it.count > 1
-    ? `${formatKm(it.m)} × ${it.count} = ${formatKm(it.m * it.count)} km`
-    : `${formatKm(it.m)} km`;
+  const { li, km, minus, count, plus } = it.el;
+  const n = it[mode];
+  const trip = mode === "one" ? "one-way trip" : "return trip";
+  count.textContent = n;
+  // The count and − reflect the current mode; the highlight reflects either.
+  count.style.visibility = minus.style.visibility = n > 0 ? "visible" : "hidden";
+  minus.disabled = n === 0;
+  minus.setAttribute("aria-label", `Remove a ${trip} to ${it.name}`);
+  plus.setAttribute("aria-label", `Add a ${trip} to ${it.name}`);
+  li.classList.toggle("is-active", it.ret + it.one > 0);
+
+  if (it.ret + it.one === 0) {
+    km.textContent = mode === "one"
+      ? `${halvesToKm(it.m)} km one way`
+      : `${formatKm(it.m)} km`;
+  } else if (it.one === 0) {
+    km.textContent = it.ret > 1
+      ? `${formatKm(it.m)} × ${it.ret} = ${formatKm(it.m * it.ret)} km`
+      : `${formatKm(it.m)} km`;
+  } else {
+    const parts = [];
+    if (it.ret) parts.push(`${it.ret} return`);
+    parts.push(`${it.one} one way`);
+    km.textContent = `${parts.join(" + ")} = ${halvesToKm(halves(it))} km`;
+  }
 }
 
 function renderTotal() {
-  let m = 0, stops = 0;
-  for (const it of items) { m += it.m * it.count; stops += it.count; }
-  totalEl.textContent = formatKm(m);
-  stopsEl.textContent = stops === 0 ? "No stops added" : `${stops} stop${stops === 1 ? "" : "s"}`;
+  let h = 0, stops = 0, oneWay = 0;
+  for (const it of items) { h += halves(it); stops += it.ret + it.one; oneWay += it.one; }
+  totalEl.textContent = halvesToKm(h);
+  stopsEl.textContent = stops === 0 ? "No stops added"
+    : `${stops} stop${stops === 1 ? "" : "s"}${oneWay ? ` (${oneWay} one way)` : ""}`;
   clearBtn.disabled = stops === 0;
+}
+
+function setMode(next) {
+  mode = next;
+  document.querySelector(`.mode input[value="${next}"]`).checked = true;
+  for (const it of items) renderRow(it);
 }
 
 function applyFilter() {
@@ -352,18 +403,22 @@ list.addEventListener("click", e => {
   const btn = e.target.closest("button[data-step]");
   if (!btn) return;
   const it = items[btn.closest(".row").dataset.i];
-  it.count = Math.max(0, it.count + Number(btn.dataset.step));
+  it[mode] = Math.max(0, it[mode] + Number(btn.dataset.step));
   renderRow(it);
   renderTotal();
-  if (it.count === 0 && btn === it.el.minus) it.el.plus.focus();
+  if (it[mode] === 0 && btn === it.el.minus) it.el.plus.focus();
   const c = it.el.count;
   c.classList.remove("bump"); void c.offsetWidth; c.classList.add("bump");
 });
 
 search.addEventListener("input", applyFilter);
 
+document.querySelector(".mode").addEventListener("change", e => setMode(e.target.value));
+
+// A cleared slip starts again in Return, since most trips are returns.
 clearBtn.addEventListener("click", () => {
-  for (const it of items) { it.count = 0; renderRow(it); }
+  for (const it of items) { it.ret = 0; it.one = 0; }
+  setMode("ret");
   renderTotal();
 });
 

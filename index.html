@@ -201,8 +201,8 @@
     <div class="tools">
       <fieldset class="mode">
         <legend class="sr-only">Each + adds a</legend>
-        <label><input type="radio" name="mode" value="ret" checked><span>Return</span></label>
-        <label><input type="radio" name="mode" value="one"><span>One way</span></label>
+        <label><input type="radio" name="mode" value="ret" checked autocomplete="off"><span>Return</span></label>
+        <label><input type="radio" name="mode" value="one" autocomplete="off"><span>One way</span></label>
       </fieldset>
       <label class="sr-only" for="search">Search destinations</label>
       <input id="search" type="search" placeholder="Search 55 destinations" autocomplete="off">    </div>
@@ -414,6 +414,11 @@ list.addEventListener("click", e => {
 search.addEventListener("input", applyFilter);
 
 document.querySelector(".mode").addEventListener("change", e => setMode(e.target.value));
+
+window.addEventListener("pageshow", () => {
+  const checked = document.querySelector(".mode input:checked");
+  if (checked && checked.value !== mode) setMode(checked.value);
+});
 
 // A cleared slip starts again in Return, since most trips are returns.
 clearBtn.addEventListener("click", () => {
